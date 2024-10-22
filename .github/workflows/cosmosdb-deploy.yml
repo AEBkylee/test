@@ -1,0 +1,37 @@
+name: Deploy to Azure Cosmos DB
+
+# 當推送到 main 分支時觸發工作流程
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 檢出當前儲存庫的代碼
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 設置 Python 環境
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      # 安裝 Cosmos DB 的 Python SDK
+      - name: Install dependencies
+        run: |
+          pip install azure-cosmos
+
+      # 執行 Cosmos DB 操作腳本
+      - name: Deploy to Cosmos DB
+        run: |
+          python deploy_cosmosdb.py
+        env:
+          COSMOS_DB_URI: ${{ secrets.COSMOS_DB_URI }}
+          COSMOS_DB_KEY: ${{ secrets.COSMOS_DB_KEY }}
+          COSMOS_DB_DATABASE_NAME: ${{ secrets.COSMOS_DB_DATABASE_NAME }}
+          COSMOS_DB_CONTAINER_NAME: ${{ secrets.COSMOS_DB_CONTAINER_NAME }}
